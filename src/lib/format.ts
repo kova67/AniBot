@@ -7,6 +7,7 @@
  * the instances are cached by shape.
  */
 const NUMBER_LOCALE = "en-US";
+const EMPTY_VALUE = "—";
 const formatters = new Map<string, Intl.NumberFormat>();
 
 function numberFormat(options: Intl.NumberFormatOptions): Intl.NumberFormat {
@@ -20,7 +21,7 @@ function numberFormat(options: Intl.NumberFormatOptions): Intl.NumberFormat {
 }
 
 export function usd(value: number | null | undefined): string {
-  if (value === null || value === undefined || !Number.isFinite(value)) return "—";
+  if (value === null || value === undefined || !Number.isFinite(value)) return EMPTY_VALUE;
   const magnitude = Math.abs(value);
   // Memecoin prices need a fixed six places so a column of them stays aligned;
   // past a thousand, cents are noise that only makes the column wider.
@@ -45,12 +46,12 @@ export function usd(value: number | null | undefined): string {
 }
 
 export function percent(value: number | null | undefined): string {
-  if (value === null || value === undefined || !Number.isFinite(value)) return "—";
+  if (value === null || value === undefined || !Number.isFinite(value)) return EMPTY_VALUE;
   return `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
 }
 
 export function count(value: number | null | undefined): string {
-  if (value === null || value === undefined || !Number.isFinite(value)) return "—";
+  if (value === null || value === undefined || !Number.isFinite(value)) return EMPTY_VALUE;
   return numberFormat({
     maximumFractionDigits: 1,
     notation: value >= 10_000 ? "compact" : "standard",
@@ -58,9 +59,9 @@ export function count(value: number | null | undefined): string {
 }
 
 export function relativeTime(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return EMPTY_VALUE;
   const then = Date.parse(iso);
-  if (Number.isNaN(then)) return "—";
+  if (Number.isNaN(then)) return EMPTY_VALUE;
   const seconds = Math.max(0, Math.round((Date.now() - then) / 1000));
   if (seconds < 45) return "just now";
   if (seconds < 90) return "1 min ago";
