@@ -85,6 +85,12 @@ export interface PumpFunLaunch {
   url: string;
 }
 
+export interface HolderPosition {
+  address: string;
+  amount: number;
+  share: number | null;
+}
+
 export interface HolderConcentration {
   mint: string;
   configured: boolean;
@@ -93,5 +99,5 @@ export interface HolderConcentration {
   /** Share of total supply held by the largest N accounts the RPC returned. */
   topShare: number | null;
   topCount: number | null;
-  holders: Array<{ address: string; amount: number; share: number | null }>;
+  holders: HolderPosition[];
 }
