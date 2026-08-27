@@ -1,4 +1,5 @@
 export type AgentMode = "openrouter" | "live-demo" | "offline-demo";
+export type ToolRunStatus = "running" | "completed" | "error";
 
 export interface AgentSource {
   title: string;
@@ -13,7 +14,7 @@ export interface ToolRun {
   output: unknown;
   durationMs: number;
   /** "running" is a live call: the chip spins against real latency. */
-  status: "running" | "completed" | "error";
+  status: ToolRunStatus;
 }
 
 export interface AgentReply {
