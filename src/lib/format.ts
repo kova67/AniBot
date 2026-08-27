@@ -6,13 +6,14 @@
  * cheap. A feed of six token cards formats around thirty values per render, so
  * the instances are cached by shape.
  */
+const NUMBER_LOCALE = "en-US";
 const formatters = new Map<string, Intl.NumberFormat>();
 
 function numberFormat(options: Intl.NumberFormatOptions): Intl.NumberFormat {
   const key = JSON.stringify(options);
   let formatter = formatters.get(key);
   if (!formatter) {
-    formatter = new Intl.NumberFormat("en-US", options);
+    formatter = new Intl.NumberFormat(NUMBER_LOCALE, options);
     formatters.set(key, formatter);
   }
   return formatter;
