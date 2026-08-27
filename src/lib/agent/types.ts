@@ -1,5 +1,10 @@
 export type AgentMode = "openrouter" | "live-demo" | "offline-demo";
 
+export interface AgentSource {
+  title: string;
+  url: string;
+}
+
 export interface ToolRun {
   id: string;
   name: string;
@@ -14,7 +19,7 @@ export interface ToolRun {
 export interface AgentReply {
   text: string;
   toolRuns: ToolRun[];
-  sources: Array<{ title: string; url: string }>;
+  sources: AgentSource[];
   mode: AgentMode;
 }
 
