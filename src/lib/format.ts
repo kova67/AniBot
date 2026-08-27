@@ -8,6 +8,8 @@
  */
 const NUMBER_LOCALE = "en-US";
 const EMPTY_VALUE = "—";
+const SECONDS_PER_MINUTE = 60;
+const SECONDS_PER_HOUR = 3_600;
 const formatters = new Map<string, Intl.NumberFormat>();
 
 function isFiniteNumber(value: number | null | undefined): value is number {
@@ -69,7 +71,9 @@ export function relativeTime(iso: string | null | undefined): string {
   const seconds = Math.max(0, Math.round((Date.now() - then) / 1000));
   if (seconds < 45) return "just now";
   if (seconds < 90) return "1 min ago";
-  if (seconds < 3600) return `${Math.round(seconds / 60)} min ago`;
-  if (seconds < 7200) return "1 hr ago";
-  return `${Math.round(seconds / 3600)} hr ago`;
+  if (seconds < SECONDS_PER_HOUR) {
+    return `${Math.round(seconds / SECONDS_PER_MINUTE)} min ago`;
+  }
+  if (seconds < SECONDS_PER_HOUR * 2) return "1 hr ago";
+  return `${Math.round(seconds / SECONDS_PER_HOUR)} hr ago`;
 }
