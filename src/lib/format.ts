@@ -10,6 +10,10 @@ const NUMBER_LOCALE = "en-US";
 const EMPTY_VALUE = "—";
 const formatters = new Map<string, Intl.NumberFormat>();
 
+function isFiniteNumber(value: number | null | undefined): value is number {
+  return value !== null && value !== undefined && Number.isFinite(value);
+}
+
 function numberFormat(options: Intl.NumberFormatOptions): Intl.NumberFormat {
   const key = JSON.stringify(options);
   let formatter = formatters.get(key);
@@ -21,7 +25,7 @@ function numberFormat(options: Intl.NumberFormatOptions): Intl.NumberFormat {
 }
 
 export function usd(value: number | null | undefined): string {
-  if (value === null || value === undefined || !Number.isFinite(value)) return EMPTY_VALUE;
+  if (!isFiniteNumber(value)) return EMPTY_VALUE;
   const magnitude = Math.abs(value);
   // Memecoin prices need a fixed six places so a column of them stays aligned;
   // past a thousand, cents are noise that only makes the column wider.
@@ -46,12 +50,12 @@ export function usd(value: number | null | undefined): string {
 }
 
 export function percent(value: number | null | undefined): string {
-  if (value === null || value === undefined || !Number.isFinite(value)) return EMPTY_VALUE;
+  if (!isFiniteNumber(value)) return EMPTY_VALUE;
   return `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
 }
 
 export function count(value: number | null | undefined): string {
-  if (value === null || value === undefined || !Number.isFinite(value)) return EMPTY_VALUE;
+  if (!isFiniteNumber(value)) return EMPTY_VALUE;
   return numberFormat({
     maximumFractionDigits: 1,
     notation: value >= 10_000 ? "compact" : "standard",
