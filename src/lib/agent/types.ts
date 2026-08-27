@@ -1,5 +1,6 @@
 export type AgentMode = "openrouter" | "live-demo" | "offline-demo";
 export type ToolRunStatus = "running" | "completed" | "error";
+export type ChatRole = "user" | "assistant";
 
 export interface AgentSource {
   title: string;
@@ -29,7 +30,7 @@ export interface ChatEntry {
   /** True only while a client is receiving deltas; never persisted as true. */
   streaming?: boolean;
   mode?: AgentReply["mode"];
-  role: "user" | "assistant";
+  role: ChatRole;
   sources?: AgentReply["sources"];
   text: string;
   toolRuns?: ToolRun[];
