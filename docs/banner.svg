@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="480" viewBox="0 0 1440 480" role="img" aria-labelledby="title desc">
+  <title id="title">AniBot</title>
+  <desc id="desc">The open agent for crypto</desc>
+  <defs>
+    <radialGradient id="blush" cx="0" cy="0" r="1" gradientTransform="translate(196 44) rotate(36) scale(620 360)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7B4C0" stop-opacity=".27"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="violet" cx="0" cy="0" r="1" gradientTransform="translate(1300 460) rotate(-145) scale(560 300)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8E7CC8" stop-opacity=".24"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="line" x1="300" y1="0" x2="1140" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7B4C0" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#F6F1EE" stop-opacity=".32"/>
+      <stop offset="1" stop-color="#8E7CC8" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="noise" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".82" numOctaves="3" seed="7"/>
+      <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .035 0"/>
+    </filter>
+  </defs>
+  <rect width="1440" height="480" rx="28" fill="#000"/>
+  <rect width="1440" height="480" rx="28" fill="url(#blush)"/>
+  <rect width="1440" height="480" rx="28" fill="url(#violet)"/>
+  <rect x=".5" y=".5" width="1439" height="479" rx="27.5" fill="none" stroke="#fff" stroke-opacity=".1"/>
+  <rect width="1440" height="480" rx="28" filter="url(#noise)" opacity=".58"/>
+  <g transform="translate(578 114)">
+    <circle cx="42" cy="42" r="35" fill="#F6F1EE"/>
+    <path d="M37.27 7.52 42 16.43l4.73-8.91Z" fill="#050505"/>
+    <ellipse cx="30.45" cy="42.57" rx="5.11" ry="6.5" fill="#050505"/>
+    <ellipse cx="53.55" cy="42.57" rx="5.11" ry="6.5" fill="#050505"/>
+  </g>
+  <text x="670" y="172" fill="#F6F1EE" font-family="Arial, sans-serif" font-size="72" font-weight="600" letter-spacing="-4">Ani<tspan fill="#F6F1EE" fill-opacity=".46">Bot</tspan></text>
+  <rect x="420" y="222" width="600" height="1" fill="url(#line)"/>
+  <text x="720" y="286" fill="#F6F1EE" fill-opacity=".9" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" font-weight="500" letter-spacing="-1.2">The open agent for crypto.</text>
+  <text x="720" y="332" fill="#F6F1EE" fill-opacity=".42" text-anchor="middle" font-family="monospace" font-size="15" letter-spacing="2">SOLANA · TOOLS · STREAMING · VRM</text>
+</svg>

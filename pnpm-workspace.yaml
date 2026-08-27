@@ -1,0 +1,6 @@
+packages:
+  - .
+
+# Hold new releases long enough for provenance and malware signals to settle.
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
