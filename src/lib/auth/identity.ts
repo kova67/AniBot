@@ -1,6 +1,6 @@
 import type { User } from "@privy-io/react-auth";
 
-export function authIdentity(user: User | null) {
+export function authIdentity(user: User | null): string {
   const email = user?.email?.address;
   if (email) return email;
   const wallet = user?.wallet?.address;
