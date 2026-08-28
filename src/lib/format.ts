@@ -16,8 +16,10 @@ function isFiniteNumber(value: number | null | undefined): value is number {
   return value !== null && value !== undefined && Number.isFinite(value);
 }
 
-function numberFormat(options: Intl.NumberFormatOptions): Intl.NumberFormat {
-  const key = JSON.stringify(options);
+function numberFormat(
+  key: string,
+  options: Intl.NumberFormatOptions,
+): Intl.NumberFormat {
   let formatter = formatters.get(key);
   if (!formatter) {
     formatter = new Intl.NumberFormat(NUMBER_LOCALE, options);
@@ -42,7 +44,12 @@ export function usd(value: number | null | undefined): string {
         : magnitude < 1_000
           ? 2
           : 0;
-  return numberFormat({
+  const formatterKey = fixed
+    ? "usd-fixed"
+    : compact
+      ? "usd-compact"
+      : `usd-standard-${maximumFractionDigits}`;
+  return numberFormat(formatterKey, {
     currency: "USD",
     maximumFractionDigits,
     minimumFractionDigits: fixed ? 6 : undefined,
@@ -58,9 +65,10 @@ export function percent(value: number | null | undefined): string {
 
 export function count(value: number | null | undefined): string {
   if (!isFiniteNumber(value)) return EMPTY_VALUE;
-  return numberFormat({
+  const compact = value >= 10_000;
+  return numberFormat(compact ? "count-compact" : "count-standard", {
     maximumFractionDigits: 1,
-    notation: value >= 10_000 ? "compact" : "standard",
+    notation: compact ? "compact" : "standard",
   }).format(value);
 }
 
