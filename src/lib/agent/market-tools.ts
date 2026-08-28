@@ -123,23 +123,16 @@ function topSolanaPairs(pairs: readonly DexPair[], limit = 6): DexPair[] {
 
 export async function getTrendingTokens(): Promise<TokenSignal[]> {
   const profiles = await getJson<DexProfile[]>(`${DEX_BASE}/token-boosts/top/v1`);
-  const solana: DexProfile[] = [];
-  for (const profile of profiles) {
-    if (profile.chainId !== "solana" || !profile.tokenAddress) continue;
-    solana.push(profile);
-    if (solana.length === TRENDING_PROFILE_LIMIT) break;
-  }
-  const addresses = solana
-    .map((profile) => profile.tokenAddress)
-    .filter((address): address is string => Boolean(address));
-  if (addresses.length === 0) return [];
+  const addresses: string[] = [];
   const profileByAddress = new Map<string, DexProfile>();
-  for (const profile of solana) {
+  for (const profile of profiles) {
     const address = profile.tokenAddress;
-    if (address && !profileByAddress.has(address)) {
-      profileByAddress.set(address, profile);
-    }
+    if (profile.chainId !== "solana" || !address) continue;
+    addresses.push(address);
+    if (!profileByAddress.has(address)) profileByAddress.set(address, profile);
+    if (addresses.length === TRENDING_PROFILE_LIMIT) break;
   }
+  if (addresses.length === 0) return [];
 
   const pairs = await getJson<DexPair[]>(
     `${DEX_BASE}/tokens/v1/solana/${addresses.join(",")}`,
