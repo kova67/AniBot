@@ -26,17 +26,18 @@ export type PendingTool = {
   input: unknown;
 };
 
+const eventEncoder = new TextEncoder();
+
 /** Wraps a producer into an NDJSON `ReadableStream`. */
 export function agentEventStream(
   produce: (emit: (event: AgentEvent) => void) => Promise<void>,
 ): ReadableStream<Uint8Array> {
-  const encoder = new TextEncoder();
   return new ReadableStream({
     async start(controller) {
       let closed = false;
       const emit = (event: AgentEvent) => {
         if (closed) return;
-        controller.enqueue(encoder.encode(`${JSON.stringify(event)}\n`));
+        controller.enqueue(eventEncoder.encode(`${JSON.stringify(event)}\n`));
       };
       try {
         await produce(emit);
