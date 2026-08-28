@@ -101,6 +101,25 @@ function toTokenSignal(
   };
 }
 
+function topSolanaPairs(pairs: readonly DexPair[], limit = 6): DexPair[] {
+  const topPairs: DexPair[] = [];
+  for (const pair of pairs) {
+    if (pair.chainId !== "solana") continue;
+    const liquidity = pair.liquidity?.usd ?? 0;
+    let insertionIndex = topPairs.length;
+    while (
+      insertionIndex > 0
+      && liquidity > (topPairs[insertionIndex - 1].liquidity?.usd ?? 0)
+    ) {
+      insertionIndex -= 1;
+    }
+    if (insertionIndex >= limit) continue;
+    topPairs.splice(insertionIndex, 0, pair);
+    if (topPairs.length > limit) topPairs.pop();
+  }
+  return topPairs;
+}
+
 export async function getTrendingTokens(): Promise<TokenSignal[]> {
   const profiles = await getJson<DexProfile[]>(`${DEX_BASE}/token-boosts/top/v1`);
   const solana = profiles
@@ -146,11 +165,7 @@ export async function searchTokens(query: string): Promise<TokenSignal[]> {
   const data = await getJson<{ pairs?: DexPair[] }>(
     `${DEX_BASE}/latest/dex/search?q=${encodeURIComponent(query)}`,
   );
-  return (data.pairs ?? [])
-    .filter((pair) => pair.chainId === "solana")
-    .sort((a, b) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0))
-    .slice(0, 6)
-    .map((pair) => toTokenSignal(pair));
+  return topSolanaPairs(data.pairs ?? []).map((pair) => toTokenSignal(pair));
 }
 
 export async function searchPredictionMarkets(query: string): Promise<PredictionSignal[]> {
