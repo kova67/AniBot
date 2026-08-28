@@ -114,13 +114,19 @@ export async function getTrendingTokens(): Promise<TokenSignal[]> {
   const pairs = await getJson<DexPair[]>(
     `${DEX_BASE}/tokens/v1/solana/${addresses.join(",")}`,
   );
+  const bestPairByAddress = new Map<string, DexPair>();
+  for (const pair of pairs) {
+    const address = pair.baseToken?.address;
+    if (!address) continue;
+    const current = bestPairByAddress.get(address);
+    if (!current || (pair.liquidity?.usd ?? 0) > (current.liquidity?.usd ?? 0)) {
+      bestPairByAddress.set(address, pair);
+    }
+  }
 
   return addresses
     .map((address) => {
-      const candidates = pairs
-        .filter((pair) => pair.baseToken?.address === address)
-        .sort((a, b) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0));
-      const pair = candidates[0];
+      const pair = bestPairByAddress.get(address);
       if (!pair) return null;
       const profile = solana.find((item) => item.tokenAddress === address);
       return toTokenSignal(pair, profile?.url, cmsImage(profile?.icon));
