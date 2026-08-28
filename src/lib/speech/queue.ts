@@ -30,6 +30,7 @@ export function speakableText(text: string): string {
 
 export class SpeechQueue {
   private queue: string[] = [];
+  private queueIndex = 0;
   private ended = false;
   private running = false;
   private disposed = false;
@@ -61,11 +62,14 @@ export class SpeechQueue {
   /** No more sentences are coming; drain and then report silence. */
   end() {
     this.ended = true;
-    if (!this.running && this.queue.length === 0) this.onSpeakingChange(false);
+    if (!this.running && this.queueIndex === this.queue.length) {
+      this.onSpeakingChange(false);
+    }
   }
 
   stop() {
     this.queue = [];
+    this.queueIndex = 0;
     this.ended = true;
     this.releaseAudio();
     this.running = false;
@@ -94,8 +98,9 @@ export class SpeechQueue {
     this.running = true;
     this.onSpeakingChange(true);
 
-    while (this.queue.length > 0 && !this.disposed) {
-      const sentence = this.queue.shift() as string;
+    while (this.queueIndex < this.queue.length && !this.disposed) {
+      const sentence = this.queue[this.queueIndex];
+      this.queueIndex += 1;
       try {
         if (this.mode === "unknown" || this.mode === "neural") {
           const played = await this.speakWithNeuralVoice(sentence);
@@ -105,6 +110,10 @@ export class SpeechQueue {
         // A sentence that will not play should not take the rest of the
         // answer's audio down with it.
       }
+    }
+    if (this.queueIndex === this.queue.length) {
+      this.queue = [];
+      this.queueIndex = 0;
     }
 
     this.running = false;
