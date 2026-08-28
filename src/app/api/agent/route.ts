@@ -45,6 +45,11 @@ const bodySchema = z.object({
   message: z.string().trim().min(1).max(2_000),
 });
 
+const RATE_LIMIT_RULES = [
+  { key: "agent:five-minutes", limit: 12, windowMs: 300_000 },
+  { key: "agent:day", limit: 120, windowMs: 86_400_000 },
+] as const;
+
 const agentTools = {
   getTrendingTokens: tool({
     description: "Get currently boosted/trending Solana tokens with price, volume and liquidity.",
@@ -148,10 +153,7 @@ export async function POST(request: Request) {
   const history = parsed.data.history ?? [];
   const apiKey = process.env.OPENROUTER_API_KEY;
   const model = process.env.OPENROUTER_MODEL ?? "x-ai/grok-4.3:nitro";
-  const decision = await checkRateLimits(auth.userId, [
-    { key: "agent:five-minutes", limit: 12, windowMs: 300_000 },
-    { key: "agent:day", limit: 120, windowMs: 86_400_000 },
-  ]);
+  const decision = await checkRateLimits(auth.userId, RATE_LIMIT_RULES);
   if (!decision.allowed) return rateLimitedResponse(decision);
 
   const requestId = crypto.randomUUID();

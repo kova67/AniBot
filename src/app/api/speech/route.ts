@@ -19,6 +19,11 @@ const inputSchema = z.object({
   text: z.string().trim().min(1).max(2_000),
 });
 
+const RATE_LIMIT_RULES = [
+  { key: "speech:ten-minutes", limit: 80, windowMs: 600_000 },
+  { key: "speech:day", limit: 600, windowMs: 86_400_000 },
+] as const;
+
 export async function POST(request: Request) {
   const auth = await authenticateRequest(request);
   if (!auth) return unauthorizedResponse();
@@ -36,10 +41,7 @@ export async function POST(request: Request) {
   const parsed = inputSchema.safeParse(payload);
   if (!parsed.success) return Response.json({ error: "Invalid speech text" }, { status: 400 });
 
-  const decision = await checkRateLimits(auth.userId, [
-    { key: "speech:ten-minutes", limit: 80, windowMs: 600_000 },
-    { key: "speech:day", limit: 600, windowMs: 86_400_000 },
-  ]);
+  const decision = await checkRateLimits(auth.userId, RATE_LIMIT_RULES);
   if (!decision.allowed) return rateLimitedResponse(decision);
 
   const providers = configuredSpeechProviders();
