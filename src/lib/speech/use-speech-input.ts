@@ -39,6 +39,14 @@ type RecognitionCtor = new () => Recognition;
 
 /** The capability never changes for the life of the page. */
 const subscribeNever = () => () => {};
+const quietRecognitionErrors = new Set(["no-speech", "aborted"]);
+const recognitionErrorMessages: Readonly<Record<string, string>> = {
+  "audio-capture": "No microphone was found.",
+  "language-not-supported": "Dictation is not available for this language.",
+  network: "Dictation needs a network connection to your browser's speech service.",
+  "not-allowed": "Microphone access was blocked.",
+  "service-not-allowed": "This browser would not start its speech service.",
+};
 
 function recognitionCtor(): RecognitionCtor | null {
   if (typeof window === "undefined") return null;
@@ -101,19 +109,13 @@ export function useSpeechInput({
     };
     recognition.onerror = (event) => {
       // Silence is not a failure, and neither is the user stopping it.
-      const quiet = new Set(["no-speech", "aborted"]);
-      if (quiet.has(event.error)) {
+      if (quietRecognitionErrors.has(event.error)) {
         setError(null);
         return;
       }
-      const messages: Record<string, string> = {
-        "audio-capture": "No microphone was found.",
-        "language-not-supported": "Dictation is not available for this language.",
-        network: "Dictation needs a network connection to your browser's speech service.",
-        "not-allowed": "Microphone access was blocked.",
-        "service-not-allowed": "This browser would not start its speech service.",
-      };
-      setError(messages[event.error] ?? "Dictation stopped unexpectedly.");
+      setError(
+        recognitionErrorMessages[event.error] ?? "Dictation stopped unexpectedly.",
+      );
     };
     recognition.onend = () => {
       recognitionRef.current = null;
