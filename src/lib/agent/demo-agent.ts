@@ -65,14 +65,35 @@ const offlineSignals = [
   },
 ];
 
+const moneyFormatters = {
+  compact: new Intl.NumberFormat("en-US", {
+    currency: "USD",
+    maximumFractionDigits: 0,
+    notation: "compact",
+    style: "currency",
+  }),
+  fractional: new Intl.NumberFormat("en-US", {
+    currency: "USD",
+    maximumFractionDigits: 6,
+    notation: "standard",
+    style: "currency",
+  }),
+  whole: new Intl.NumberFormat("en-US", {
+    currency: "USD",
+    maximumFractionDigits: 0,
+    notation: "standard",
+    style: "currency",
+  }),
+};
+
 const money = (value: number | null) => {
   if (value === null) return "n/a";
-  return new Intl.NumberFormat("en-US", {
-    currency: "USD",
-    maximumFractionDigits: value < 1 ? 6 : 0,
-    notation: value > 999_999 ? "compact" : "standard",
-    style: "currency",
-  }).format(value);
+  const formatter = value > 999_999
+    ? moneyFormatters.compact
+    : value < 1
+      ? moneyFormatters.fractional
+      : moneyFormatters.whole;
+  return formatter.format(value);
 };
 
 function completedRun(
