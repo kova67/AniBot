@@ -16,15 +16,20 @@
 type Mode = "unknown" | "neural" | "silent";
 
 const MAX_CHARS = 600;
+const FENCED_CODE_PATTERN = /```[\s\S]*?```/g;
+const INLINE_CODE_PATTERN = /`([^`]*)`/g;
+const MARKDOWN_MARKER_PATTERN = /[*_#>]/g;
+const MARKDOWN_LINK_PATTERN = /\[([^\]]+)\]\([^)]*\)/g;
+const WHITESPACE_PATTERN = /\s+/g;
 
 /** Markdown is for the eye; strip it before anything gets read aloud. */
 export function speakableText(text: string): string {
   return text
-    .replaceAll(/```[\s\S]*?```/g, " ")
-    .replaceAll(/`([^`]*)`/g, "$1")
-    .replaceAll(/[*_#>]/g, "")
-    .replaceAll(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-    .replaceAll(/\s+/g, " ")
+    .replaceAll(FENCED_CODE_PATTERN, " ")
+    .replaceAll(INLINE_CODE_PATTERN, "$1")
+    .replaceAll(MARKDOWN_MARKER_PATTERN, "")
+    .replaceAll(MARKDOWN_LINK_PATTERN, "$1")
+    .replaceAll(WHITESPACE_PATTERN, " ")
     .trim();
 }
 
