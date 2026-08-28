@@ -59,14 +59,18 @@ export function agentStreamResponse(
   stream: ReadableStream<Uint8Array>,
   extraHeaders: HeadersInit = {},
 ) {
+  const headers = new Headers({
+    "Cache-Control": "no-store, no-transform",
+    "Content-Type": "application/x-ndjson; charset=utf-8",
+    // Proxies that buffer would defeat the whole point of streaming.
+    "X-Accel-Buffering": "no",
+  });
+  for (const [name, value] of new Headers(extraHeaders)) {
+    headers.append(name, value);
+  }
+
   return new Response(stream, {
-    headers: {
-      "Cache-Control": "no-store, no-transform",
-      "Content-Type": "application/x-ndjson; charset=utf-8",
-      // Proxies that buffer would defeat the whole point of streaming.
-      "X-Accel-Buffering": "no",
-      ...Object.fromEntries(new Headers(extraHeaders)),
-    },
+    headers,
   });
 }
 
