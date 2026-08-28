@@ -39,6 +39,7 @@ const DEX_BASE = "https://api.dexscreener.com";
 const POLY_BASE = "https://gamma-api.polymarket.com";
 const PUMP_BASE = "https://frontend-api-v3.pump.fun";
 const HELIUS_RPC = "https://mainnet.helius-rpc.com";
+const TRENDING_PROFILE_LIMIT = 12;
 
 async function heliusRpc<T>(apiKey: string, method: string, params: unknown[]): Promise<T> {
   const response = await fetch(`${HELIUS_RPC}/?api-key=${apiKey}`, {
@@ -122,9 +123,12 @@ function topSolanaPairs(pairs: readonly DexPair[], limit = 6): DexPair[] {
 
 export async function getTrendingTokens(): Promise<TokenSignal[]> {
   const profiles = await getJson<DexProfile[]>(`${DEX_BASE}/token-boosts/top/v1`);
-  const solana = profiles
-    .filter((profile) => profile.chainId === "solana" && profile.tokenAddress)
-    .slice(0, 12);
+  const solana: DexProfile[] = [];
+  for (const profile of profiles) {
+    if (profile.chainId !== "solana" || !profile.tokenAddress) continue;
+    solana.push(profile);
+    if (solana.length === TRENDING_PROFILE_LIMIT) break;
+  }
   const addresses = solana
     .map((profile) => profile.tokenAddress)
     .filter((address): address is string => Boolean(address));
